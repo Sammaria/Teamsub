@@ -1,0 +1,136 @@
+<html>
+<head>
+	<link href="css/style.css" rel="stylesheet" media="screen">
+</head>
+<body>
+
+<h1 id="etltool">ETL Tool</h1>
+
+<h2 id="introduction">1. Introduction</h2>
+
+<p>ETL Tool is a Java console application, which transforms XML articles to HTML format and transcodes the videos and images into mobile friendly formats.</p>
+
+<h2 id="overview">2. Overview</h2>
+
+<p>Tool does the following activities:</p>
+
+<ul>
+<li>Iterates through extracted dataset.</li>
+<li>Processes Journals.</li>
+<li>Extracts metadata information from Issue XML files and save into database.</li>
+<li>Create cover images for issues.</li>
+<li>Transforms article xml files using XSLT and create HTML packages.</li>
+<li>Transcodes all video formats into .mp4 format.</li>
+<li>Creates the following .zip packages for Apps to download.
+
+<ul>
+<li>Full text
+
+<ul>
+<li>Consists of html, tables and images.</li>
+</ul></li>
+<li>PDF
+
+<ul>
+<li>PDF version of articles.</li>
+</ul></li>
+<li>Abstract
+
+<ul>
+<li>Abstract html.</li>
+</ul></li>
+<li>Supplementary
+
+<ul>
+<li>Consists of Audios, Videos, Supplementary PDF&#8217;s, Doc&#8217;s, and Presentation&#8217;s etc.</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<h2 id="howtorunthetool">3. How to run the Tool</h2>
+
+<p>Detailed Documentation and source code can be found at <a href="https://github.com/ElsevierTechnologyServices/STMJ-JAT-Server-DTD">Github</a>.</p>
+
+<p>The syntax for running the ETL tool using <strong>command line</strong>: java -jar JAWS.jar &lt;path of the extracted tar files&gt; &lt;path of the config file (setting.config)&gt; false &lt;PII1,PII2,..&gt;</p>
+
+<p>Jar file accepts four parameters, all parameters are space separated. If there is any space within the parameter, that should be enclosed in double quotes.The parameters are:</p>
+
+<ul>
+<li>Complete path of the extracted Tar files to process.</li>
+<li>Complete path of the configuration file.</li>
+<li>True/false for sending individual email alert after processing each issue [Optional].</li>
+<li>Comma separated PII numbers of the articles to be processed (in case of reprocessing only selected files due to any entity/other errors) [Optional].</li>
+</ul>
+
+<h2 id="processflow">4. Process Flow</h2>
+
+<ul>
+<li>Run the tool daily/ specific interval.</li>
+<li>Process all the tar files received after the previous processing time.</li>
+<li>Iterates through each tar files.</li>
+<li>Iterates through each ISSN folders in each tar files.</li>
+<li>Process the articles.</li>
+<li>Call Elsevier Notification API after processing each ISSN(Journal).</li>
+<li>Sends an Issue-wise email notification about product_id and price.</li>
+<li>Sends a summary email after processing each tar file.</li>
+<li>Uploads a CSV file to an FTP Server with complete details of the processed articles.</li>
+</ul>
+
+<h2 id="messagesemails">5. Messages/Emails</h2>
+
+<h3 id="summaryemails">5.1 Summary Emails</h3>
+
+<p>ETL Tool sends a summary email after processing each tar files. This email contains issue-wise listing of:</p>
+
+<ul>
+<li>Dataset</li>
+<li>ISSN</li>
+<li>Journal Name</li>
+<li>Status</li>
+<li>Volume</li>
+<li>Issue</li>
+<li>Total Articles</li>
+<li>Processed Articles</li>
+<li>Product ID</li>
+<li>Price</li>
+</ul>
+
+<p>This email alert sometimes contains an error log file. We logs two types of messages. These logs are attached as EWError.log. Email subject line explains the messages like:</p>
+
+<ul>
+<li>KIW00000000000832 Processed with Warning(s)</li>
+<li>KIW00000000000832 Processed with Errors(s)</li>
+<li>KIW00000000000832 Processed with Warning(s) and Error(s)</li>
+</ul>
+
+<h3 id="warning">5.2 Warning</h3>
+
+<p>Tool throws warning on following three conditions:</p>
+
+<ul>
+<li>There is no body available in XML file.
+
+<ul>
+<li>Warning : S1542356513010604 java.lang.Exception: No XML body Exists, Not Processed.</li>
+</ul></li>
+<li>Processed a published article once and after that if we are processing the AIP version of that particular article.
+
+<ul>
+<li>Warning : S1542356513010604 java.lang.Exception: Published Article Processed Already.</li>
+</ul></li>
+<li>An unknown named entity appears in XML file. We have stored a possible list of entities in main.ent file. If a new entity appears in XML file, tool will throw an error but will process the content. But there may be chances of missing HTML content. So this kind of warnings should be taken care of and need to re-process the specific article after entering the new entity in main.ent file.
+
+<ul>
+<li>Warning : S1542356513010604 org.xml.sax.SAXParseException; lineNumber: 1; columnNumber: 2991; The entity z.hearts was referenced, but not declared.</li>
+</ul></li>
+</ul>
+
+<h3 id="errors">5.3 Errors</h3>
+
+<p>All other exceptions occur while processing the files will be logged and emailed to all concerned authorities. These messages should be taken seriously and should be reported to KiwiTech.</p>
+
+<h3 id="individualissue-wiseemail">5.4 Individual Issue-wise Email</h3>
+
+<p>ETL Tool sends an email alert after processing an issue with the same above fields, but this can be turned on/off using the command line parameters of the tool by switching the parameter to true/false.</p>
+
+<p><strong>Command:</strong> java -jar JAWS.jar &lt;path of the extracted tar files&gt; &lt;path of the config file (setting.config)&gt; false.</p>

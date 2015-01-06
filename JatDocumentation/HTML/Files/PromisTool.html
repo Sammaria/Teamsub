@@ -1,0 +1,32 @@
+<html>
+<head>
+	<link href="css/style.css" rel="stylesheet" media="screen">
+</head>
+<body>
+
+<h1 id="promistool">Promis Tool</h1>
+
+<h2 id="introduction">1. Introduction</h2>
+
+<p>Promis Tool is a Java Console Application, which creates the Editorial and Aim &amp; Scope data using Elsevier XML feed and update the Journal databases. </p>
+
+<h2 id="overview">2. Overview</h2>
+
+<p>Tool does the following activities:</p>
+
+<ul>
+<li>Iterates through the Journal database setup.</li>
+<li>Check the Promis feed in Elsevier cloud.</li>
+<li>Extracts Chief Editor information and update the Journal databases.</li>
+<li>Extracts Aim &amp; Scope information using XPath and update the Journal databases.</li>
+<li>Extracts the Editorial info and create HTML using XSLT and updates the Journal databases.</li>
+</ul>
+
+<h2 id="howtorunthetool">3. How to run the Tool</h2>
+
+<p>Detailed Documentation and source code can be found at <a href="https://github.com/ElsevierTechnologyServices/STMJ-JAT-PROMIS">Github</a>.
+The syntax for running the Promis tool using <strong>command line:</strong> java -jar STMJ-JAT-PROMIS.jar &lt;path of config file&gt;.</p>
+
+<h2 id="messagesemails">4. Messages/Emails</h2>
+
+<p>Promis Tool will send the status via E-Mail notifications. The main cause of error is missing <a href="http://www.elsevier.com/xml_store">XML feed</a>. </p>

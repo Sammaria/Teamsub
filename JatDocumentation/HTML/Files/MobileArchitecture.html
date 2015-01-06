@@ -1,0 +1,566 @@
+<html>
+<head>
+	<link href="css/style.css" rel="stylesheet" media="screen">
+</head>
+<body>
+<h1 id="jat4.5mobileapplicationarchitecturedocument">JAT 4.5 Mobile Application Architecture Document</h1>
+
+<h2 id="introduction">1. Introduction</h2>
+
+<p>This document contains the Mobile Application Architecture for JAT project.</p>
+
+<h3 id="purposeofthedocument">1.1 Purpose of the Document</h3>
+
+<p>The purpose of this document is to: </p>
+
+<ul>
+<li>Identify various design approaches.</li>
+<li>Identify core modules of the system.</li>
+<li>Identify data structures and algorithm.</li>
+<li>Identify and finalize UI design in terms of technical implementation.</li>
+</ul>
+
+<h3 id="scopeofthedocument">1.2 Scope of the Document</h3>
+
+<p>The scope is determined on following factors:</p>
+
+<ul>
+<li>Platform: iOS</li>
+<li>Mobile:
+
+<ul>
+<li>Base-SDK: 5.0</li>
+<li>Orientation: Portrait/ Landscape</li>
+<li>Device: iPhone/ iPad</li>
+<li>Languages: English</li>
+</ul></li>
+<li>Service-Response: JSON</li>
+</ul>
+
+<h3 id="goalsandguidelines">1.3 Goals and Guidelines</h3>
+
+<p>Primary goal of this design is to make a memory efficient and responsive native application. Hence effective memory management needs to be taken care during development. We also need to assure that we reuse the code as much as possible. </p>
+
+<h2 id="applicationarchitectureframework">2. Application Architecture Framework</h2>
+
+<h3 id="architecture">2.1 Architecture</h3>
+
+<figure>
+<img src="Images/ArchitectureDiagram.png" alt="Application Architecture" />
+<figcaption>Application Architecture</figcaption></figure>
+
+<h2 id="applicationcomponentdescription">3. Application Component Description</h2>
+
+<h3 id="networkcomponent">3.1 Network Component</h3>
+
+<p>This component will provide the functionality of Request Response handler, which will connect to a remote url and fetch data. It has been divided into three parts:</p>
+
+<ul>
+<li><code>HttpManager</code><br/>
+This class is responsible to send and fetch the data from server. This class deals with UrlConnection to send/receive the data from server</li>
+<li><code>RequestHandlerBase</code><br/>
+ This class is a base class of each RequestHandler class with respect to relative module. It holds the common functionality of request handler and provides the service to <code>Request Handler</code> by inheritance. It conforms to the response returned by the HttpManager and sends it to its respective request handler.</li>
+<li><code>Request Handler</code><br/>
+It conforms to the response returned by RequestHandlerBase. This class creates the request and submits the created request. This class parses the response into data model and then notifies the controller towards the arrival of data.</li>
+</ul>
+
+<h3 id="uicomponent">3.2 UI Component</h3>
+
+<p>UI Component comprises of Model, View and Controller. This component is based on Model-View-Controller design pattern.</p>
+
+<ul>
+<li>The model manages data of the application domain.</li>
+<li>The view renders the model into a form suitable for interaction, typically a user interface element. Multiple views can exist for a single model for different purposes.</li>
+<li>The controller receives user input and initiates a response by making calls on model objects. A controller accepts input from the user and instructs the model and view to perform actions based on that input.</li>
+</ul>
+
+<h2 id="applicationmodules">4. Application Modules</h2>
+
+<h3 id="applicationarchitecture">4.1 Application Architecture</h3>
+
+<h4 id="modulesstack">4.1.1 Modules Stack</h4>
+
+<p><img src="Images/MobileSystemArchitecture.png" alt="" /></p>
+
+<h4 id="dataflow">4.1.2 Data Flow</h4>
+
+<figure>
+<img src="Images/MobileDataFlow.png" alt="" />
+<figcaption></figcaption></figure>
+
+<h3 id="dbschema">4.2 DB Schema</h3>
+
+<figure>
+<img src="Images/DBDiagram.png" alt="" />
+<figcaption></figcaption></figure>
+
+<h3 id="applicationspecificmodules">4.3 Application Specific Modules</h3>
+
+<h4 id="singletonmodules">4.3.1 Singleton Modules</h4>
+
+<h5 id="appdelegate">4.3.1.1 _AppDelegate</h5>
+
+<p>This class is the Apple&#8217;s default class loaded at the launch time of the application. The responsibilities handled by this class in JAT application are:</p>
+
+<ul>
+<li>It initializes the analytics libraries.</li>
+<li>It loads splash screen which calls the web-service to fetch the journal information.</li>
+<li>It registers for the push notifcations.</li>
+<li>It decides whether it is a Single/ Multi-Journal application and loads the corresponding view.</li>
+</ul>
+
+<h6 id="appdelegatemethodshandler">4.4.3.1.1.1 APPDelegateMethodsHandler</h6>
+
+<p>This class is accessed as a singleton class through <strong>_AppDelegate</strong> class. It performs most of the mazor application functionalities:</p>
+
+<ul>
+<li>It copies the PDF files, abstracts, other data into seperate folders in the application documents directory.</li>
+<li>It checks for the application version number and performs the migration if needed.</li>
+<li>It checks for database connectivity.</li>
+</ul>
+
+<h5 id="databaseconnect">4.3.1.2 DatabaseConnect</h5>
+
+<p>This will be a singleton class responsible for insertion/deletion/updation on database table. It will also be responsible for opening/closing the database connection.</p>
+
+<h5 id="serverhandler">4.3.1.3 ServerHandler</h5>
+
+<p>This will be a singleton class responsible for making and sending requests to server for downloading content. </p>
+
+<h4 id="constantsmodules">4.3.2 Constants Modules</h4>
+
+<h5 id="global">4.3.2.1 Global</h5>
+
+<p>This class will contain all the constant values, enums i.e. anything which will not be changing and is used across the application such as height, macros, constant strings, etc.</p>
+
+<h5 id="webconstant">4.3.2.2 WebConstant</h5>
+
+<p>This class will be responsible for storing the application related constants such as App-ID, App-Version, URL&#8217;s, Keys, etc.</p>
+
+<h4 id="controllermodules">4.3.3 Controller Modules</h4>
+
+<h5 id="navbartoprightview">4.3.3.1 NavBarTopRightView</h5>
+
+<p>This class is custom view inheriting from UIView for displaying the top-bar which contains information, search, &amp; settings button. Their are seperate custom controller classes implemented for loading the corresponding views on button events.</p>
+
+<h5 id="multijournalviewcontroller">4.3.3.2 MultiJournalViewController</h5>
+
+<p>This class is responsible for displaying all the Journals. It includes society description, facebook-link, twitter-link, society banner image, etc. It uses two further views for the implementation:</p>
+
+<h6 id="multijournalscrolllistview">4.3.3.2.1 MultiJournalScrollListView</h6>
+
+<p>This class is custom view inheriting from UIView for displaying particular Journal in scroll view on a multijournal page.</p>
+
+<h6 id="societyview">4.3.3.2.2 SocietyView</h6>
+
+<p>This class is custom view inheriting from UIView for displaying the society information. It also links the society Facebook &amp; Twitter page.</p>
+
+<h5 id="singlejournalviewcontrollerktslidecontroller">4.3.3.3 SingleJournalViewController (KTSlideController)</h5>
+
+<p>This class is responsible for displaying the single journal information. It consist of two sub view-controllers for displaying the left &amp; right panel.The two sub view-controllers are:</p>
+
+<h6 id="homescreenmenuviewcontroller">4.3.3.3.1 HomeScreenMenuViewController</h6>
+
+<p>This class is responsible for displaying the left-panel.It uses list-view to display all the options to the user such as My-Articles, Journal-Info, etc.</p>
+
+<h6 id="latestarticleviewcontroller">4.3.3.3.2 LatestArticleViewController</h6>
+
+<p>This class is responsible for displaying the right-panel which contains issue and its articles information. It uses two sub view-controllers for the implementation:</p>
+
+<ol>
+<li><em>ArticleTableView:</em> This classes used native list-view and is responsible for displaying all the articles for the current issue.</li>
+<li><em>TopViewForArticleViewController:</em> This classes is responsible for displaying the latest issue cover image and its details.</li>
+</ol>
+
+<h5 id="articlesearchcontroller">4.3.3.4 ArticleSearchController</h5>
+
+<p>This class is responsible for searching the keywords in contents of issues &amp; articles. It uses <em>ArticleTableView</em> to display the search results. </p>
+
+<h5 id="readinglistviewcontroller">4.3.3.5 ReadingListViewController</h5>
+
+<p>This class is responsible for displaying all Bookmarked articles. It also uses <em>ArticleTableView</em> for displaying the bookmarked articles.</p>
+
+<h5 id="fulltextviewcontrollerktslidecontroller">4.3.3.6 FullTextViewController (KTSlideController)</h5>
+
+<p>This class is responsible for displaying all the information related to the Article. It consist of two sub view-controllers for displaying the left &amp; right panel.The two sub view-controllers are:</p>
+
+<h6 id="articlemenuviewcontroller">4.3.3.6.1 ArticleMenuViewController</h6>
+
+<p>This class is responsible for displaying the left menu options related to an article such as citation, audio, video, figures, tables, other files, notes etc.</p>
+
+<h6 id="webviewcontroller">4.3.3.6.2 WebViewController</h6>
+
+<p>This class is responsible for displaying Abstarct, Full-text and PDF of an Article. This class also maintains downloading of full text and pdf of an article. It also manages the sharing information of artical on Facebook &amp; Twitter. </p>
+
+<h5 id="articleviewcontroller_ipad">4.3.3.7 ArticleViewController_iPad</h5>
+
+<p>This class is responsible for displaying all the Articles for the particular Issue. It uses native list-view for displaying all the Articles.</p>
+
+<h5 id="articleinpressviewcontroller_ipad">4.3.3.8 ArticleInPressViewController_iPad</h5>
+
+<p>This class is responsible for displaying all the Articles in press for the particular Journal. It uses native list-view for displaying all the Articles.</p>
+
+<h5 id="allissuelistviewcontroller">4.3.3.9 AllIssueListViewController</h5>
+
+<p>This class is responsible for displaying all the Issues. This class also differentiate in all Issues available and the issues present on the user&#8217;s device. The user can select amongst any of the two options.</p>
+
+<h5 id="downloadsharemanager">4.3.3.10 DownloadShareManager</h5>
+
+<p>This class will be singleton class responsible for downloading all the content in the application.</p>
+
+<h5 id="articleaccesscontrol">4.3.3.11 ArticleAccessControl</h5>
+
+<p>This class will be responsible for checking whether the user can access the particular article or not depending on the article access type, login-session or purchase history.</p>
+
+<h2 id="applicationmodelclasses">5. Application Model Classes</h2>
+
+<h3 id="multijournalinfo">5.1 MultiJournalInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>App_ID</td><td>P</td><td>Stores the application-ID.</td></tr>
+<tr><td>App_Short_Code</td><td>P </td><td>Stores the application code.</td></tr>
+<tr><td>App_Title</td><td>P </td><td>Stores the application title.</td></tr>
+<tr><td>Society_Description</td><td>P </td><td>Stores the society description.</td></tr>
+<tr><td>Society_Facebook_URL</td><td>P</td><td>Stores the facebook URL.</td></tr>
+<tr><td>Society_Twitter_URL</td><td>P </td><td>Stores the twitter URL.</td></tr>
+<tr><td>Dart_ID</td><td>P </td><td>Stores the Dart-ID.</td></tr>
+<tr><td>Flurry_ID</td><td>P </td><td>Stores the Flurry-ID.</td></tr>
+<tr><td>Google_Analytics_Code</td><td>P</td><td>Stores the GoogleAnalytics-ID.</td></tr>
+<tr><td>Last_Modified</td><td>P </td><td>Stores the last modified time.</td></tr>
+<tr><td>journalArray</td><td>P </td><td>Stores the array of JournalInfo objects.</td></tr>
+<tr><td>SocietyArray</td><td>P </td><td>Stores the array of SocietyLinkInfo objects.</td></tr>
+<tr><td>updatedLink</td><td>P </td><td>Stores the update link.</td></tr>
+<tr><td>updatedVersion</td><td>P </td><td>Stores the update version.</td></tr>
+<tr><td>updatedTitle</td><td>P</td><td>Stores the update title.</td></tr>
+<tr><td>updatedDescription</td><td>P </td><td>Stores the update description.</td></tr>
+<tr><td>issueInfo</td><td>P </td><td>Stores the issue information.</td></tr>
+<tr><td>isSocietyInfoAvailable</td><td>P </td><td>Stores whether the society is available.</td></tr>
+
+<tr><td>AppBannerPortraitSplashScreenAdIPhone</td><td>P</td><td>Stores the AdMob Spash Screen for IPhone.</td></tr>
+<tr><td>AppBannerPortraitSplashScreenAdIpad</td><td>P </td><td>Stores the AdMob Spash Screen for IPad.</td></tr>
+<tr><td>MJFullPageLandscapeAdIpad</td><td>P </td><td>Stores the multijournal AdMob full page landscape key in case of Search.</td></tr>
+<tr><td>MJFullPagePortraitAdIpad</td><td>P </td><td>Stores the multijournal AdMob full page portrait key in case of search.</td></tr>
+<tr><td>MJFullPagePortraitAdIphone5</td><td>P </td><td>Stores the multijournal AdMob full page portrait key for Iphone 5.This key will be used in case of search.</td></tr>
+<tr><td>MjFullPagePortraitAdIphone4</td><td>P </td><td>Stores the multijournal AdMob full page portrait key for Iphone 4.This key will be used in case of search</td></tr>
+<tr><td>MJBannerPortraitAdIpad</td><td>P </td><td>Stores the multijournal AdMob banner portrait key for Ipad.</td></tr>
+<tr><td>MjBannerPortraitAdIphone</td><td>P </td><td>Stores the multijournal AdMob banner portrait key for Iphone.</td></tr>
+</table>
+
+<h3 id="societylinkinfo">5.2 SocietyLinkInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>societyId</td><td>P </td><td>Stores the society-ID.</td></tr>
+<tr><td>society_link_title</td><td>P </td><td>Stores the society title.</td></tr>
+<tr><td>society_link_url</td><td>P </td><td>Stores the society URL.</td></tr>
+</table>
+
+<h3 id="journalinfo">5.3 JournalInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>Journal_Id </td><td>P</td><td>Stores the journal-ID.</td></tr>
+<tr><td>ISSN </td><td>P</td><td>Stores the journal ISSN number.</td></tr>
+<tr><td>Journal_Title</td><td>P </td><td>Stores the journal title.</td></tr>
+<tr><td>Journal_Image_URL</td><td>P </td><td>Stores the journal image URL.</td></tr>
+<tr><td>Journal_Facebook_URL</td><td>P</td><td>Stores the facebook URL.</td></tr>
+<tr><td>Journal_Twitter_URL</td><td>P </td><td>Stores the twitter URL.</td></tr>
+<tr><td>Facebook_ID </td><td>P</td><td>Stores the Dart-ID.</td></tr>
+<tr><td>Twitter_kOAuthConsumerSecret</td><td>P </td><td>Stores the twitter secret key.</td></tr>
+<tr><td>Twitter_kOAuthConsumerKey</td><td>P</td><td>SStores the twitter consumer key.</td></tr>
+<tr><td>Subscription_ID</td><td>P </td><td>Stores the subscription-ID.</td></tr>
+<tr><td>Subscription_Price</td><td>P </td><td>Stores the subscription price.</td></tr>
+<tr><td>Last_Modified</td><td>P </td><td>Stores the last modified time.</td></tr>
+<tr><td>journalLinks</td><td>P</td><td>Stores the list of journal links.</td></tr>
+<tr><td>jAppShortCode</td><td>P </td><td>Stores the short code.</td></tr>
+<tr><td>AccessType</td><td>P </td><td>Stores the access type.</td></tr>
+<tr><td>EmailSubject</td><td>P </td><td>Stores the email subject.</td></tr>
+<tr><td>AIPTitle</td><td>P </td><td>Stores the AIP title.</td></tr>
+<tr><td>AIPDescription</td><td>P </td><td>Stores the AIP description.</td></tr>
+<tr><td>societyType</td><td>P </td><td>Defines the Society type.</td></tr>
+<tr><td>isAIPAvailable</td><td>P</td><td>Defines the AIP availability.</td></tr>
+<tr><td>isAimAndScopeAvailable</td><td>P </td><td>Defines the aim and scope availability.</td></tr>
+<tr><td>isEditotrsAndBoardAvailable</td><td>P </td><td>Defines the editor and boards availability.</td></tr>
+<tr><td>baseContentURL</td><td>P </td><td>Stores the base content URL.</td></tr>
+<tr><td>coverImagePath</td><td>P </td><td>Stores the cover path image URL.</td></tr>
+<tr><td>isIssueCoverImageAvailable</td><td>P </td><td>Defines the issue cover image availability.</td></tr>
+<tr><td>sequence</td><td>P </td><td>Stores the sequence number of journal for multijournal screen.</td></tr>
+<tr><td>FullPageLandscapeAdIpad</td><td>P </td><td>Stores the journal level AdMob full page landscape ad for Ipad.</td></tr>
+<tr><td>FullPagePortraitAdIpad</td><td>P </td><td>Stores the journal level AdMob full page portrait ad for Ipad.</td></tr>
+<tr><td>FullPagePortraitAdIphone5</td><td>P </td><td>Stores the journal level AdMob full page portrait ad for Iphone 5.</td></tr>
+<tr><td>FullPagePortraitAdIphone4</td><td>P </td><td>Stores the journal level AdMob full page portrait ad for Iphone 4.</td></tr>
+<tr><td>SkyCrapperPortraitAdIpad</td><td>P </td><td>Stores the journal level AdMob banner skyscrapper key for Ipad.</td></tr>
+<tr><td>BannerPortraitAdIpad</td><td>P </td><td>Stores the journal level AdMob banner portrait key for Ipad.</td></tr>
+<tr><td>BannerPortraitAdIPhone</td><td>P </td><td>Stores the journal level AdMob banner portrait key for Iphone.</td></tr>
+
+
+</table>
+
+<h3 id="issueinfo">5.4 IssueInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>journalId </td><td>P</td><td>Stores the journal-ID.</td></tr>
+<tr><td>issue_id </td><td>P</td><td>Stores the issue-ID.</td></tr>
+<tr><td>issue_number</td><td>P </td><td>Stores the issue number.</td></tr>
+<tr><td>volume</td><td>P </td><td>Stores the volume number.</td></tr>
+<tr><td>editors</td><td>P</td><td>Stores the editors information.</td></tr>
+<tr><td>date_Of_Release</td><td>P </td><td>Stores the date of release.</td></tr>
+<tr><td>page_Range </td><td>P</td><td>Stores the page range.</td></tr>
+<tr><td>last_Modified</td><td>P </td><td>Stores the last modified time.</td></tr>
+<tr><td>issue_Title</td><td>P</td><td>Stores the issue title..</td></tr>
+<tr><td>special_Editors</td><td>P </td><td>Stores the special editors information.</td></tr>
+<tr><td>special_Issue</td><td>P </td><td>Stores the special issue.</td></tr>
+<tr><td>video</td><td>P </td><td>Stores the video link.</td></tr>
+<tr><td>cover_Image</td><td>P</td><td>Stores the cover image link.</td></tr>
+<tr><td>product_ID</td><td>P </td><td>Stores the product-ID.</td></tr>
+<tr><td>price</td><td>P </td><td>Stores the price.</td></tr>
+<tr><td>issuePII</td><td>P </td><td>Stores the issue PII number.</td></tr>
+<tr><td>totalArticles</td><td>P </td><td>Stores the articles.</td></tr>
+</table>
+
+<h3 id="downloadarticleinfo">5.5 DownloadArticleInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>article_id </td><td>P</td><td>Stores the article-ID.</td></tr>
+<tr><td>issue_id </td><td>P</td><td>Stores the issue-ID.</td></tr>
+<tr><td>journal_id</td><td>P </td><td>Stores the journal-ID.</td></tr>
+<tr><td>article_title</td><td>P </td><td>Stores the article title.</td></tr>
+<tr><td>articleinPress</td><td>P</td><td>Stores the article in press.</td></tr>
+<tr><td>hasDocuments</td><td>P </td><td>Defines whether the article has document.</td></tr>
+<tr><td>hasAudios </td><td>P</td><td>Defines whether the article has audio.</td></tr>
+<tr><td>hasFigures</td><td>P </td><td>Defines whether the article has figures.</td></tr>
+<tr><td>hasVideos</td><td>P</td><td>Defines whether the article has videos.</td></tr>
+<tr><td>isSupplementDownloaded</td><td>P </td><td>Defines whether the article supplement is downloaded.</td></tr>
+<tr><td>hasSupplements</td><td>P </td><td>Defines whether the article has supplement.</td></tr>
+<tr><td>isCMEArticle</td><td>P </td><td>Defines whether the article contains CME Article.</td></tr>
+<tr><td>isBookmarked</td><td>P</td><td>Defines whether the article is bookmarked.</td></tr>
+<tr><td>isArticleAbstractDownloaded</td><td>P </td><td>Defines whether the article abstarct is downloaded.</td></tr>
+<tr><td>isArticlePurchased</td><td>P </td><td>Defines whether the article is purchased.</td></tr>
+<tr><td>isArticleDownloaded</td><td>P </td><td>Defines whether the article is downloaded.</td></tr>
+<tr><td>isAuthorExpanded</td><td>P </td><td>Defines whether the author is expanded.</td></tr>
+<tr><td>isAbstractPresent</td><td>P </td><td>Defines whether the article abstract is present.</td></tr>
+</table>
+
+<h3 id="articleinfo">5.6 ArticleInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>html_file_name </td><td>P</td><td>Stores the HTML file name.</td></tr>
+<tr><td>pdf_file_name </td><td>P</td><td>Stores the PDF file name.</td></tr>
+<tr><td>abstract</td><td>P </td><td>Stores the abstract.</td></tr>
+<tr><td>keywords</td><td>P </td><td>Stores the keywords.</td></tr>
+<tr><td>releaseDate</td><td>P</td><td>Stores the release date.</td></tr>
+<tr><td>author</td><td>P </td><td>Stores the author.</td></tr>
+<tr><td>type </td><td>P</td><td>Stores the article type.</td></tr>
+<tr><td>articleSubType</td><td>P </td><td>Stores the article sub type.</td></tr>
+<tr><td>DOI</td><td>P</td><td>Stores the date of issue.</td></tr>
+<tr><td>DOI_Link</td><td>P </td><td> Stores DOI link.</td></tr>
+<tr><td>myNotes</td><td>P </td><td>Stores the notes.</td></tr>
+<tr><td>notesSelectedText</td><td>P </td><td>Stores the notes selected text.</td></tr>
+<tr><td>year</td><td>P</td><td>Stores the year.</td></tr>
+<tr><td>bookmarkCreatedDate</td><td>P </td><td>Stores the bookmark created date.</td></tr>
+<tr><td>journalName</td><td>P </td><td>Stores the journal name.</td></tr>
+<tr><td>copyrightInformation</td><td>P </td><td>Stores the copyright information.</td></tr>
+<tr><td>issuePII</td><td>P </td><td>Stores the issue PII number.</td></tr>
+<tr><td>authorArray</td><td>P </td><td>Stores the array of AuthorsData.</td></tr>
+<tr><td>citationText</td><td>P </td><td>Stores the citation text.</td></tr>
+<tr><td>sequenceNo</td><td>P </td><td>Stores the sequence number.</td></tr>
+<tr><td>objFileSizeInfo</td><td>P </td><td>Stores the FileSizeInfo object.</td></tr>
+</table>
+
+<h3 id="authorsdata">5.7 AuthorsData</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>authorId </td><td>P</td><td>Stores the authors-ID.</td></tr>
+<tr><td>articleId </td><td>P</td><td>Stores the article-ID.</td></tr>
+<tr><td>authorName</td><td>P </td><td>Stores the  author name.</td></tr>
+<tr><td>authorDescription</td><td>P </td><td>Stores the author description.</td></tr>
+<tr><td>articleInfoId</td><td>P</td><td>Stores the articleinfo-ID.</td></tr>
+</table>
+
+<h3 id="loginuserinfo">5.8 LoginUserInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>userID </td><td>P</td><td>Stores the user-ID.</td></tr>
+<tr><td>login </td><td>P</td><td>Stores the login type.</td></tr>
+<tr><td>session</td><td>P </td><td>Stores the login session.</td></tr>
+<tr><td>firstName</td><td>P </td><td>Stores the first name.</td></tr>
+<tr><td>lastName</td><td>P</td><td>Stores the last name.</td></tr>
+<tr><td>email</td><td>P </td><td>Stores the email.</td></tr>
+<tr><td>errorMessage </td><td>P</td><td>Stores the error message.</td></tr>
+<tr><td>errorCode</td><td>P </td><td>Stores the error code.</td></tr>
+</table>
+
+<h3 id="societylogininfo">5.9 SocietyLoginInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>partnerId </td><td>P</td><td>Stores the patner-ID.</td></tr>
+<tr><td>partnerName </td><td>P</td><td>Stores the patner Name.</td></tr>
+<tr><td>forgotPwdService</td><td>P </td><td>Stores the forgot password service.</td></tr>
+<tr><td>forgotPwdURL</td><td>P </td><td>Stores the forgot password URL.</td></tr>
+<tr><td>helptext</td><td>P</td><td>Stores the help text.</td></tr>
+<tr><td>acronym</td><td>P </td><td>Stores the acronym.</td></tr>
+<tr><td>errorMessage </td><td>P</td><td>Stores the error message.</td></tr>
+<tr><td>errorCode</td><td>P </td><td>Stores the error code.</td></tr>
+</table>
+
+<h3 id="journallinkdata">5.10 JournalLinkData</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>linkID </td><td>P</td><td>Stores the link-ID.</td></tr>
+<tr><td>linkTitle </td><td>P</td><td>Stores the link title.</td></tr>
+<tr><td>_inkURL</td><td>P </td><td>Stores the link URL.</td></tr>
+</table>
+
+<h3 id="articlesectioninfo">5.11 ArticleSectionInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>sectionTitle </td><td>P</td><td>Stores the section title.</td></tr>
+<tr><td>isExpanded </td><td>P</td><td>Defines whether the section in expanded.</td></tr>
+<tr><td>indexNumber</td><td>P </td><td>Stores the index number.</td></tr>
+</table>
+
+<h3 id="articleandissuesinfo">5.12 ArticleAndIssuesInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>articleInfoObj </td><td>P</td><td>Stores the ArticleInfo object.</td></tr>
+<tr><td>issueInfoObj </td><td>P</td><td>Stores the IssueInfo object.</td></tr>
+<tr><td>isChecked</td><td>P </td><td>Defines whether it is checked.</td></tr>
+</table>
+
+<h3 id="notesinfo">5.13 NotesInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>articleAndIssuesInfo </td><td>P</td><td>Stores the ArticleAndIssuesInfo object.</td></tr>
+<tr><td>highlightObject </td><td>P</td><td>Stores the HighlightObject object.</td></tr>
+</table>
+
+<h3 id="articlemediainfo">5.14 ArticleMediaInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>articleInfoId </td><td>P</td><td>Stores the articleInfo-ID.</td></tr>
+<tr><td>mediaTypeId </td><td>P</td><td>Stores the mediaType-ID.</td></tr>
+<tr><td>mediaUrl</td><td>P </td><td>Stores the media path URL.</td></tr>
+<tr><td>mediaCompleteLocalUrl</td><td>P </td><td>Stores the media complete path URL.</td></tr>
+<tr><td>mediaCaption</td><td>P</td><td>Stores the media caption.</td></tr>
+<tr><td>mediaThumbImageName</td><td>P </td><td>Stores the media thumb image name.</td></tr>
+<tr><td>articleAuthor </td><td>P</td><td>Stores the article author.</td></tr>
+<tr><td>articleSubType</td><td>P </td><td>Stores the article sub type.</td></tr>
+<tr><td>mediaTitle</td><td>P</td><td>Stores the media title.</td></tr>
+<tr><td>articleTitle</td><td>P </td><td>Stores the article title</td></tr>
+<tr><td>isAuthorExpanded</td><td>P </td><td>Defines whether author is expanded.</td></tr>
+</table>
+
+<h3 id="olderissueobjects">5.15 OlderIssueObjects</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>issueId </td><td>P</td><td>Stores the issue-ID.</td></tr>
+<tr><td>issueNo </td><td>P</td><td>Stores the issue number.</td></tr>
+<tr><td>editors</td><td>P </td><td>Stores the editors.</td></tr>
+<tr><td>issueName</td><td>P </td><td>Stores the issue name.</td></tr>
+<tr><td>volNo</td><td>P</td><td>Stores the volume number.</td></tr>
+<tr><td>date</td><td>P </td><td>Stores the issue date.</td></tr>
+<tr><td>pageRange </td><td>P</td><td>Stores the page range.</td></tr>
+<tr><td>specialIssueTitle</td><td>P </td><td>Stores the special issue title.</td></tr>
+<tr><td>specialIssueEditorNames</td><td>P</td><td>Stores the special issue editors names.</td></tr>
+<tr><td>coverImage</td><td>P </td><td>Stores the cover image.</td></tr>
+<tr><td>productID</td><td>P </td><td>Stores the product-ID.</td></tr>
+<tr><td>productPrice</td><td>P </td><td>Stores the product price.</td></tr>
+<tr><td>isAllArticlesDownloaded</td><td>P</td><td>Defines whether all articles are downloaded.</td></tr>
+<tr><td>isArticleMetadataDownloded</td><td>P </td><td>Defines whether article metadata is downloaded.</td></tr>
+<tr><td>isIssuePurchased</td><td>P </td><td>Defines whether issue is purchased.</td></tr>
+<tr><td>totalArticles</td><td>P </td><td>Stores the total number of articles.</td></tr>
+<tr><td>version</td><td>P </td><td>Stores the version number.</td></tr>
+</table>
+
+<h3 id="olderarticledata">5.16 OlderArticleData</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>articleID </td><td>P</td><td>Stores the article-ID.</td></tr>
+<tr><td>issueId </td><td>P</td><td>Stores the issue-ID.</td></tr>
+<tr><td>title</td><td>P </td><td>Stores the article title.</td></tr>
+<tr><td>author</td><td>P </td><td>Stores the author name.</td></tr>
+<tr><td>HTML</td><td>P</td><td>Stores the HTML file name.</td></tr>
+<tr><td>pdf</td><td>P </td><td>Stores the pdf file name.</td></tr>
+<tr><td>abstract1 </td><td>P</td><td>Stores the abstract.</td></tr>
+<tr><td>keyword</td><td>P </td><td>Stores the keywords.</td></tr>
+<tr><td>releaseDate</td><td>P</td><td>Stores the release date.</td></tr>
+<tr><td>articleSubType</td><td>P </td><td>Stores the article sub type.</td></tr>
+<tr><td>articleinPress</td><td>P </td><td>Stores the article in press.</td></tr>
+<tr><td>pageRange</td><td>P </td><td>Stores the page range.</td></tr>
+<tr><td>articleInfoId</td><td>P</td><td>Stores the articleinfo-ID.</td></tr>
+<tr><td>DOI_Link</td><td>P </td><td>Stores the DOI link.</td></tr>
+<tr><td>myNotes</td><td>P </td><td>Stores my notes.</td></tr>
+<tr><td>notesSelectedText</td><td>P </td><td>Stores the notes selected text.</td></tr>
+<tr><td>isArticlePurchased</td><td>P </td><td>Defines whether articles is purchased.</td></tr>
+<tr><td>isBookmarked</td><td>P </td><td>Defines whether article is bookmarked.</td></tr>
+<tr><td>isArticleAbstractDownloaded</td><td>P </td><td>Defines whether article abstract is downloaded.</td></tr>
+<tr><td>isPDFDownloaded</td><td>P </td><td>Defines whether PDF is downloaded.</td></tr>
+<tr><td>version</td><td>P </td><td>Stores the version number.</td></tr>
+<tr><td>authorArray</td><td>P </td><td>Stores the list of authors.</td></tr>
+<tr><td>isArticalPurchasedViaInApp</td><td>P </td><td>Defines whether article is purchased through In-App purchase.</td></tr>
+<tr><td>articleHeight</td><td>P </td><td>Stores the article height in portrait.</td></tr>
+<tr><td>articalHeightLandscape</td><td>P </td><td>Stores the article height in landscape.</td></tr>
+</table>
+
+<h3 id="articlesectionobject">5.17 ArticleSectionObject</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>sectionTitle </td><td>P</td><td>Stores the section title.</td></tr>
+<tr><td>sectionTag </td><td>P</td><td>Stores the section tag.</td></tr>
+<tr><td>articleInfoId</td><td>P </td><td>Stores the articleinfo-ID.</td></tr>
+</table>
+
+<h3 id="savesearchresultinfo">5.18 SaveSearchResultInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>journalID </td><td>P</td><td>Stores the journal-ID.</td></tr>
+<tr><td>selectedOptionNumber </td><td>P</td><td>Stores the selected option for search.</td></tr>
+<tr><td>issueID</td><td>P </td><td>Stores the issue-ID.</td></tr>
+<tr><td>searchKeyword</td><td>P </td><td>Stores the search keyword.</td></tr>
+<tr><td>lastResultCount</td><td>P</td><td>Stores the last results count.</td></tr>
+<tr><td>selectedRow</td><td>P </td><td>Stores the  selected row.</td></tr>
+</table>
+
+<h3 id="filesizeinfo">5.19 FileSizeInfo</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>pdfFileSize </td><td>P</td><td>Stores the PDF file size.</td></tr>
+<tr><td>fulltextFileSize </td><td>P</td><td>Stores the full text size.</td></tr>
+<tr><td>supplementFileSize</td><td>P </td><td>Stores the supplement file size.</td></tr>
+<tr><td>unzippedPdfFileSize</td><td>P </td><td>Stores the unzipped PDF file size.</td></tr>
+<tr><td>unzippedFulltextFileSize</td><td>P</td><td>Stores the unzipped full text file size.</td></tr>
+<tr><td>unzippedSupplementFileSize</td><td>P </td><td>Stores the unzipped supplement file size.</td></tr>
+<tr><td>articleInfoId </td><td>P</td><td>Stores the articleInfo-ID.</td></tr>
+</table>
+
+<h3 id="highlightobject">5.20 HighlightObject</h3>
+
+<table>
+<tr><td><b>Name<b></td><td><b>Property(P)<b></td><td><b>Details<b></td></tr>
+<tr><td>id </td><td>P</td><td>Stores the ID.</td></tr>
+<tr><td>articleId </td><td>P</td><td>Stores the article-ID.</td></tr>
+<tr><td>journalId</td><td>P </td><td>Stores the journal-ID.</td></tr>
+<tr><td>highlightId</td><td>P </td><td>Stores the highlight-ID.</td></tr>
+<tr><td>note</td><td>P</td><td>Stores the note.</td></tr>
+<tr><td>selectedText</td><td>P </td><td>Stores the selected text.</td></tr>
+<tr><td>savedOnDate </td><td>P</td><td>Stores the save date.</td></tr>
+<tr><td>selectedArticleInfoID</td><td>P </td><td>Stores the articleInfo-ID.</td></tr>
+<tr><td>notePosition </td><td>P</td><td>Stores the note position.</td></tr>
+</table>
